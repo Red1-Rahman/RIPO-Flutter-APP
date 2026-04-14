@@ -18,6 +18,28 @@ import 'routes/booking_routes.dart';
 import 'routes/customer_routes.dart';
 import 'routes/provider_routes.dart';
 
+const _corsHeaders = <String, String>{
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept, Authorization',
+};
+
+Middleware corsMiddleware() {
+  return (Handler innerHandler) {
+    return (Request request) async {
+      if (request.method == 'OPTIONS') {
+        return Response(204, headers: _corsHeaders);
+      }
+
+      final response = await innerHandler(request);
+      return response.change(headers: {
+        ...response.headers,
+        ..._corsHeaders,
+      });
+    };
+  };
+}
+
 Handler createHandler({String? dbFilePath}) {
   final db = AppDatabase.openLocal(filePath: dbFilePath);
   final tokenService = TokenService(
@@ -35,10 +57,14 @@ Handler createHandler({String? dbFilePath}) {
     ..mount('/auth/', buildAuthRoutes(authHandler).call)
     ..mount('/customer/', buildCustomerRoutes(customerHandler).call)
     ..mount('/bookings/', buildBookingRoutes(bookingHandler, tokenService).call)
-    ..mount('/provider/', buildProviderRoutes(providerHandler, tokenService).call)
+    ..mount(
+        '/provider/', buildProviderRoutes(providerHandler, tokenService).call)
     ..mount('/admin/', buildAdminRoutes(adminHandler, tokenService).call);
 
-  return const Pipeline().addMiddleware(logRequests()).addHandler(router.call);
+  return Pipeline()
+      .addMiddleware(logRequests())
+      .addMiddleware(corsMiddleware())
+      .addHandler(router.call);
 }
 
 Future<HttpServer> startServer({
@@ -48,6 +74,7 @@ Future<HttpServer> startServer({
 }) async {
   final handler = createHandler(dbFilePath: dbFilePath);
   final server = await io.serve(handler, host, port);
-  stdout.writeln('RIPO local API running on http://${server.address.host}:${server.port}');
+  stdout.writeln(
+      'RIPO local API running on http://${server.address.host}:${server.port}');
   return server;
 }
