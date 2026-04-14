@@ -1,3 +1,4 @@
+// backend\lib\src\handlers\auth_handler.dart
 import 'package:shelf/shelf.dart';
 import 'package:sqlite3/sqlite3.dart';
 
@@ -15,7 +16,10 @@ class AuthHandler {
   Future<Response> login(Request request) async {
     try {
       final body = await readJsonBody(request);
-      final identifier = ((body['identifier'] ?? body['email'] ?? body['phone']) as String?)?.trim() ?? '';
+      final identifier =
+          ((body['identifier'] ?? body['email'] ?? body['phone']) as String?)
+                  ?.trim() ??
+              '';
       final password = (body['password'] as String?)?.trim() ?? '';
 
       if (identifier.isEmpty || password.isEmpty) {
@@ -70,12 +74,14 @@ class AuthHandler {
       final body = await readJsonBody(request);
       final missing = missingRequired(body, ['fullName', 'email', 'password']);
       if (missing.isNotEmpty) {
-        return badRequest('Missing required fields.', details: {'fields': missing});
+        return badRequest('Missing required fields.',
+            details: {'fields': missing});
       }
 
       final role = ((body['role'] as String?) ?? 'customer').toLowerCase();
       if (!{'customer', 'provider'}.contains(role)) {
-        return badRequest('Invalid role. Only customer/provider are allowed for registration.');
+        return badRequest(
+            'Invalid role. Only customer/provider are allowed for registration.');
       }
 
       final email = (body['email'] as String).trim();
@@ -83,12 +89,15 @@ class AuthHandler {
       final phone = (body['phone'] as String?)?.trim();
       final password = (body['password'] as String).trim();
 
-      final duplicate = db.select('SELECT id FROM users WHERE lower(email) = lower(?) LIMIT 1', [email]);
+      final duplicate = db.select(
+          'SELECT id FROM users WHERE lower(email) = lower(?) LIMIT 1',
+          [email]);
       if (duplicate.isNotEmpty) {
         return conflict('Email already exists.');
       }
 
-      final roleRows = db.select('SELECT id FROM roles WHERE name = ? LIMIT 1', [role]);
+      final roleRows =
+          db.select('SELECT id FROM roles WHERE name = ? LIMIT 1', [role]);
       final roleId = roleRows.first['id'] as int;
 
       db.execute(
@@ -132,11 +141,14 @@ class AuthHandler {
         return badRequest('email is required.');
       }
 
-      final rows = db.select('SELECT id FROM users WHERE lower(email) = lower(?) LIMIT 1', [email]);
+      final rows = db.select(
+          'SELECT id FROM users WHERE lower(email) = lower(?) LIMIT 1',
+          [email]);
       if (rows.isEmpty) {
         return ok({
           'success': true,
-          'message': 'If the account exists, a reset instruction has been sent.',
+          'message':
+              'If the account exists, a reset instruction has been sent.',
         });
       }
 

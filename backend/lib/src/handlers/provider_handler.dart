@@ -1,3 +1,4 @@
+// backend\lib\src\handlers\provider_handler.dart
 import 'package:shelf/shelf.dart';
 import 'package:sqlite3/sqlite3.dart';
 
@@ -146,22 +147,26 @@ class ProviderHandler {
         }
       }
 
-      return ok({'requests': requests, 'active': active, 'completed': completed});
+      return ok(
+          {'requests': requests, 'active': active, 'completed': completed});
     } catch (_) {
       return internalError();
     }
   }
 
   Response acceptJob(Request request, String id) {
-    return _updateJobStatus(id: id, newJobStatus: 'In Progress', newBookingStatus: 'Accepted');
+    return _updateJobStatus(
+        id: id, newJobStatus: 'In Progress', newBookingStatus: 'Accepted');
   }
 
   Response declineJob(Request request, String id) {
-    return _updateJobStatus(id: id, newJobStatus: 'Declined', newBookingStatus: 'Rejected');
+    return _updateJobStatus(
+        id: id, newJobStatus: 'Declined', newBookingStatus: 'Rejected');
   }
 
   Response completeJob(Request request, String id) {
-    return _updateJobStatus(id: id, newJobStatus: 'Completed', newBookingStatus: 'Completed');
+    return _updateJobStatus(
+        id: id, newJobStatus: 'Completed', newBookingStatus: 'Completed');
   }
 
   Response _updateJobStatus({
@@ -188,7 +193,8 @@ class ProviderHandler {
         'UPDATE provider_jobs SET status = ?, updated_at = ? WHERE id = ?',
         [newJobStatus, DateTime.now().toIso8601String(), jobId],
       );
-      db.execute('UPDATE bookings SET status = ? WHERE id = ?', [newBookingStatus, bookingId]);
+      db.execute('UPDATE bookings SET status = ? WHERE id = ?',
+          [newBookingStatus, bookingId]);
 
       return ok({
         'jobId': jobId,

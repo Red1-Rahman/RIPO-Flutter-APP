@@ -1,3 +1,4 @@
+// backend\lib\src\routes\booking_routes.dart
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
@@ -8,7 +9,8 @@ Router buildBookingRoutes(BookingHandler handler, TokenService tokens) {
   final router = Router();
 
   router.get('/availability', handler.getAvailability);
-  router.post('/', requireAuth(tokens, roles: {'customer'})(handler.createBooking));
+  router.post(
+      '/', requireAuth(tokens, roles: {'customer'})(handler.createBooking));
   router.get(
     '/my',
     requireAuth(tokens, roles: {'customer'})(handler.listMyBookings),

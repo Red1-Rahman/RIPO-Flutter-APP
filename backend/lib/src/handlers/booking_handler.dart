@@ -1,3 +1,4 @@
+// backend\lib\src\handlers\auth_handler.dart
 import 'package:shelf/shelf.dart';
 import 'package:sqlite3/sqlite3.dart';
 
@@ -34,7 +35,8 @@ class BookingHandler {
         'SELECT time_slot FROM bookings WHERE service_id = ? AND booking_date = ?',
         [serviceId, date],
       );
-      final bookedSlots = bookedRows.map((row) => row['time_slot'] as String).toSet();
+      final bookedSlots =
+          bookedRows.map((row) => row['time_slot'] as String).toSet();
 
       return ok({
         'serviceId': serviceId,
@@ -59,9 +61,11 @@ class BookingHandler {
       }
 
       final body = await readJsonBody(request);
-      final missing = missingRequired(body, ['serviceId', 'date', 'timeSlot', 'address']);
+      final missing =
+          missingRequired(body, ['serviceId', 'date', 'timeSlot', 'address']);
       if (missing.isNotEmpty) {
-        return badRequest('Missing required fields.', details: {'fields': missing});
+        return badRequest('Missing required fields.',
+            details: {'fields': missing});
       }
 
       final serviceId = int.tryParse(body['serviceId'].toString());
@@ -99,7 +103,17 @@ class BookingHandler {
           (customer_id, provider_id, service_id, status, booking_date, time_slot, address, price, created_at)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''',
-        [auth.userId, providerId, serviceId, 'Pending', date, timeSlot, address, price, now],
+        [
+          auth.userId,
+          providerId,
+          serviceId,
+          'Pending',
+          date,
+          timeSlot,
+          address,
+          price,
+          now
+        ],
       );
       final bookingId = db.lastInsertRowId;
 

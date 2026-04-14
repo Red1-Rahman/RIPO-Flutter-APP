@@ -1,3 +1,4 @@
+// backend\lib\src\handlers\customer_handler.dart
 import 'package:shelf/shelf.dart';
 import 'package:sqlite3/sqlite3.dart';
 
@@ -11,9 +12,15 @@ class CustomerHandler {
 
   Response getServices(Request request) {
     try {
-      final query = (request.url.queryParameters['query'] ?? request.url.queryParameters['q'] ?? '').trim().toLowerCase();
+      final query = (request.url.queryParameters['query'] ??
+              request.url.queryParameters['q'] ??
+              '')
+          .trim()
+          .toLowerCase();
 
-      final whereClause = query.isEmpty ? '' : 'WHERE lower(s.name) LIKE ? OR lower(c.name) LIKE ?';
+      final whereClause = query.isEmpty
+          ? ''
+          : 'WHERE lower(s.name) LIKE ? OR lower(c.name) LIKE ?';
       final params = query.isEmpty ? <Object?>[] : ['%$query%', '%$query%'];
 
       final rows = db.select(
@@ -56,7 +63,8 @@ class CustomerHandler {
 
   Response getCategories(Request request) {
     try {
-      final rows = db.select('SELECT id, name, image FROM categories ORDER BY name ASC');
+      final rows =
+          db.select('SELECT id, name, image FROM categories ORDER BY name ASC');
       return ok(
         rows
             .map(

@@ -1,3 +1,4 @@
+// backend\lib\src\handlers\admin_handler.dart
 import 'package:shelf/shelf.dart';
 import 'package:sqlite3/sqlite3.dart';
 
@@ -11,12 +12,16 @@ class AdminHandler {
 
   Response dashboard(Request request) {
     try {
-      final revenueRow = db.select(
-        'SELECT COALESCE(SUM(CASE WHEN is_incoming = 1 THEN amount ELSE -amount END), 0) AS total FROM transactions',
-      ).first;
-      final activeJobsRow = db.select(
-        "SELECT COUNT(*) AS total FROM provider_jobs WHERE status IN ('Pending Request', 'In Progress')",
-      ).first;
+      final revenueRow = db
+          .select(
+            'SELECT COALESCE(SUM(CASE WHEN is_incoming = 1 THEN amount ELSE -amount END), 0) AS total FROM transactions',
+          )
+          .first;
+      final activeJobsRow = db
+          .select(
+            "SELECT COUNT(*) AS total FROM provider_jobs WHERE status IN ('Pending Request', 'In Progress')",
+          )
+          .first;
       final usersRow = db.select(
         '''
           SELECT COUNT(*) AS total
@@ -76,7 +81,8 @@ class AdminHandler {
 
   Response users(Request request) {
     try {
-      final role = (request.url.queryParameters['role'] ?? 'customer').toLowerCase();
+      final role =
+          (request.url.queryParameters['role'] ?? 'customer').toLowerCase();
       if (!{'customer', 'provider'}.contains(role)) {
         return badRequest('role must be customer or provider.');
       }
@@ -116,16 +122,23 @@ class AdminHandler {
 
   Response finance(Request request) {
     try {
-      final revenueRow = db.select(
-        'SELECT COALESCE(SUM(CASE WHEN is_incoming = 1 THEN amount ELSE -amount END), 0) AS total FROM transactions',
-      ).first;
-      final commissionRow = db.select(
-        'SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE is_incoming = 1',
-      ).first;
-      final pendingRow = db.select(
-        "SELECT COALESCE(SUM(amount), 0) AS total FROM payouts WHERE status = 'pending'",
-      ).first;
-      final totalJobsRow = db.select('SELECT COUNT(*) AS total FROM provider_jobs').first;
+      final revenueRow = db
+          .select(
+            'SELECT COALESCE(SUM(CASE WHEN is_incoming = 1 THEN amount ELSE -amount END), 0) AS total FROM transactions',
+          )
+          .first;
+      final commissionRow = db
+          .select(
+            'SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE is_incoming = 1',
+          )
+          .first;
+      final pendingRow = db
+          .select(
+            "SELECT COALESCE(SUM(amount), 0) AS total FROM payouts WHERE status = 'pending'",
+          )
+          .first;
+      final totalJobsRow =
+          db.select('SELECT COUNT(*) AS total FROM provider_jobs').first;
 
       final payouts = db.select(
         '''

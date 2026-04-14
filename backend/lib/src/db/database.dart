@@ -1,3 +1,4 @@
+// backend\lib\src\db\database.dart
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -11,7 +12,8 @@ class AppDatabase {
   final Database db;
 
   static AppDatabase openLocal({String? filePath}) {
-    final resolvedPath = filePath ?? p.join(Directory.current.path, 'data', 'ripo.sqlite3');
+    final resolvedPath =
+        filePath ?? p.join(Directory.current.path, 'data', 'ripo.sqlite3');
     final directory = Directory(p.dirname(resolvedPath));
     if (!directory.existsSync()) {
       directory.createSync(recursive: true);
