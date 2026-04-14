@@ -3,10 +3,29 @@ import 'package:ripo/Common_Screens/login_screen.dart';
 import 'package:ripo/customers_screens/edit_profile_screen.dart';
 import 'package:ripo/customers_screens/chat_list_screen.dart';
 import 'package:ripo/customers_screens/favorite_screen.dart';
+import 'package:ripo/data/session_store.dart';
 import 'package:ripo/providers_screens/provider_wallet_screen.dart';
 
 class CustomerProfileScreen extends StatelessWidget {
   CustomerProfileScreen({super.key});
+
+  Map<String, dynamic> get _currentUser {
+    final user = SessionStore.instance.user;
+    if (user == null) {
+      return <String, dynamic>{};
+    }
+    return Map<String, dynamic>.from(user);
+  }
+
+  String get _displayName {
+    final user = _currentUser;
+    return (user['fullName'] ?? user['name'] ?? 'Guest User').toString();
+  }
+
+  String get _displayEmail {
+    final user = _currentUser;
+    return (user['email'] ?? 'No email').toString();
+  }
 
   final List<Map<String, dynamic>> _generalItems = [
     {'icon': Icons.person, 'label': 'My Profile'},
@@ -78,9 +97,9 @@ class CustomerProfileScreen extends StatelessWidget {
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               Text(
-                'Tanvir Mahmud',
+                _displayName,
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 18,
@@ -90,7 +109,7 @@ class CustomerProfileScreen extends StatelessWidget {
               ),
               SizedBox(height: 4),
               Text(
-                'tanvirmahmud78@gmail.com',
+                _displayEmail,
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 13,
@@ -153,7 +172,8 @@ class CustomerProfileScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const EditProfileScreen(),
+                        builder: (_) =>
+                            EditProfileScreen(userData: _currentUser),
                       ),
                     );
                   } else if (item['label'] == 'Message') {

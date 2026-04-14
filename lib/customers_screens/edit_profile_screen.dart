@@ -1,13 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:ripo/data/session_store.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
+  const EditProfileScreen({super.key, this.userData});
+
+  final Map<String, dynamic>? userData;
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  Map<String, dynamic> get _currentUser {
+    final user = widget.userData ?? SessionStore.instance.user;
+    if (user == null) {
+      return <String, dynamic>{};
+    }
+    return Map<String, dynamic>.from(user);
+  }
+
+  String _valueOrDefault(String key, String fallback) {
+    final value = _currentUser[key];
+    final text = value?.toString().trim() ?? '';
+    return text.isEmpty ? fallback : text;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,11 +83,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             ),
             const SizedBox(height: 36),
-            _buildField('Full Name', 'Tanvir Mahmud'),
+            _buildField('Full Name', _valueOrDefault('fullName', 'Guest User')),
             const SizedBox(height: 20),
-            _buildField('Phone Number', '+880 1712 345678'),
+            _buildField(
+                'Phone Number', _valueOrDefault('phone', 'Not provided')),
             const SizedBox(height: 20),
-            _buildField('Email', 'tanvirmahmud78@gmail.com'),
+            _buildField('Email', _valueOrDefault('email', 'No email')),
             const SizedBox(height: 20),
             _buildField('Address', 'house 57,Road 25, Block A, Banani'),
             const SizedBox(height: 20),
