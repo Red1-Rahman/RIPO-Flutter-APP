@@ -204,20 +204,20 @@ class _SearchScreenState extends State<SearchScreen> {
           'Search',
           style: TextStyle(
             fontFamily: 'Inter',
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
             color: Colors.black87,
           ),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.black87, size: 22),
           onPressed: () => Navigator.pop(context),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(color: Colors.black12, height: 1),
+          child: Divider(height: 1, thickness: 1, color: Colors.black.withValues(alpha: 0.05)),
         ),
       ),
       body: Column(
@@ -233,51 +233,53 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildSearchBar() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       child: Container(
-        height: 50,
+        height: 42,
         decoration: BoxDecoration(
           color: const Color(0xFFF9F9F9),
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: BorderRadius.circular(21),
           border: Border.all(color: const Color(0x0A000000)),
           boxShadow: const [
             BoxShadow(
               color: Color(0x05000000),
-              blurRadius: 8,
+              blurRadius: 6,
               offset: Offset(0, 2),
             ),
           ],
         ),
         child: Row(
           children: [
-            const SizedBox(width: 16),
-            const Icon(Icons.search_rounded, color: Colors.black87, size: 22),
-            const SizedBox(width: 12),
+            const SizedBox(width: 14),
+            const Icon(Icons.search_rounded, color: Colors.black87, size: 20),
+            const SizedBox(width: 10),
             Expanded(
               child: TextField(
                 controller: _searchController,
                 onChanged: (val) => setState(() => _searchQuery = val),
                 autofocus: true,
+                style: const TextStyle(fontFamily: 'Inter', fontSize: 13, color: Colors.black87),
                 decoration: const InputDecoration(
                   hintText: 'Search...',
+                  isDense: true,
                   hintStyle: TextStyle(
                     fontFamily: 'Inter',
                     color: Colors.black45,
-                    fontSize: 15,
+                    fontSize: 13,
                   ),
                   border: InputBorder.none,
                 ),
               ),
             ),
-            Container(width: 1, height: 24, color: Colors.black12),
+            Container(width: 1, height: 20, color: Colors.black12),
             GestureDetector(
               onTap: _showFilterOptions,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
                 decoration: const BoxDecoration(
-                  color: Color(0xFFD6D0FA), // Light purple filter block
+                  color: Color(0xFFD6D0FA),
                   borderRadius:
-                      BorderRadius.horizontal(right: Radius.circular(25)),
+                      BorderRadius.horizontal(right: Radius.circular(21)),
                 ),
                 alignment: Alignment.center,
                 child: Row(
@@ -286,14 +288,14 @@ class _SearchScreenState extends State<SearchScreen> {
                       'Filter',
                       style: TextStyle(
                         fontFamily: 'Inter',
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 11,
                         color: Colors.black87,
                       ),
                     ),
-                    SizedBox(width: 6),
+                    SizedBox(width: 4),
                     Icon(Icons.filter_list_rounded,
-                        size: 16, color: Colors.black87),
+                        size: 14, color: Colors.black87),
                   ],
                 ),
               ),
@@ -328,12 +330,12 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 14,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.78, // Increased height to prevent text overflow
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 12,
+        childAspectRatio: 0.8,
       ),
       itemCount: results.length,
       itemBuilder: (context, index) {
@@ -395,9 +397,9 @@ class _SearchScreenState extends State<SearchScreen> {
                       s['discount'],
                       style: const TextStyle(
                         fontFamily: 'Inter',
-                        fontSize: 10,
+                        fontSize: 9,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFFD32F2F), // Red text for discount
+                        color: Color(0xFFD32F2F),
                       ),
                     ),
                   ),
@@ -407,7 +409,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           // Details
           Padding(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -415,8 +417,8 @@ class _SearchScreenState extends State<SearchScreen> {
                   s['name'],
                   style: const TextStyle(
                     fontFamily: 'Inter',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
                     color: Colors.black87,
                   ),
                   maxLines: 1,
@@ -434,8 +436,8 @@ class _SearchScreenState extends State<SearchScreen> {
                             '৳ ${s['price']}',
                             style: const TextStyle(
                               fontFamily: 'Inter',
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
                               color: Colors.black87,
                             ),
                           ),
@@ -449,8 +451,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                 s['rating'].toString(),
                                 style: const TextStyle(
                                   fontFamily: 'Inter',
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
                                   color: Colors.black87,
                                 ),
                               ),
@@ -464,13 +466,13 @@ class _SearchScreenState extends State<SearchScreen> {
                             s['isFavorite'] = !s['isFavorite'];
                           });
                         },
-                        child: Icon(
-                          s['isFavorite']
-                              ? Icons.favorite_rounded
-                              : Icons.favorite_border_rounded,
-                          color: const Color(0xFF4285F4), // Blue heart outline matching screenshot
-                          size: 20,
-                        ),
+                          child: Icon(
+                            s['isFavorite']
+                                ? Icons.favorite_rounded
+                                : Icons.favorite_border_rounded,
+                            color: const Color(0xFF4285F4),
+                            size: 18,
+                          ),
                       ),
                     ],
                   ),

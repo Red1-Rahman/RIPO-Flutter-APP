@@ -17,7 +17,6 @@ class CustomerDashboardScreen extends StatefulWidget {
 class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   int _currentOfferPage = 0;
   int _selectedNavIndex = 0;
-  int _selectedServiceIndex = 0;
 
   late final PageController _offerPageController;
   Timer? _offerTimer;
@@ -37,16 +36,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
       'image': 'lib/media/loundry_washing_offer.png',
       'bg': const Color(0xFFE8F4FD)
     },
-  ];
-
-  final List<Map<String, dynamic>> _commonServices = [
-    {'icon': Icons.ac_unit_rounded,           'label': 'AC Repair'},
-    {'icon': Icons.handyman_rounded,          'label': 'Carpenter'},
-    {'icon': Icons.local_shipping_rounded,    'label': 'Shifting'},
-    {'icon': Icons.cleaning_services_rounded, 'label': 'Cleaning'},
-    {'icon': Icons.restaurant_rounded,        'label': 'Cooking'},
-    {'icon': Icons.plumbing_rounded,          'label': 'Plumbing'},
-    {'icon': Icons.electrical_services,       'label': 'Electric'},
   ];
 
   final List<Map<String, dynamic>> _recommendedServices = [
@@ -125,8 +114,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildCommonServices(),
-                const SizedBox(height: 22),
                 _buildOfferBanner(),
                 const SizedBox(height: 24),
                 _buildSectionHeader('Recommended Services'),
@@ -157,6 +144,25 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                   ? CustomerProfileScreen()
                   : _buildDashboardBody(),
       bottomNavigationBar: _buildBottomNav(),
+      floatingActionButton: SizedBox(
+        width: 48,
+        height: 48,
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SearchScreen()),
+            );
+          },
+          backgroundColor: const Color(0xFF6950F4),
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: const Icon(Icons.search_rounded, color: Colors.white, size: 24),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
@@ -164,11 +170,16 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
 
   Widget _buildHeader() {
     return Container(
+      width: double.infinity,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [Color(0xFFB8A8F8), Color(0xFFE8D8FF)],
+        ),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
         ),
       ),
       child: SafeArea(
@@ -271,135 +282,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                 ],
               ),
 
-              const SizedBox(height: 16),
-
-              // ── Search bar ──
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const SearchScreen()),
-                  );
-                },
-                child: Container(
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 8,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const TextField(
-                    enabled: false,
-                    decoration: InputDecoration(
-                      hintText: 'Search ...',
-                      hintStyle: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 14,
-                        color: Colors.black38,
-                      ),
-                      prefixIcon: Icon(
-                        Icons.search_rounded,
-                        color: Colors.black38,
-                        size: 22,
-                      ),
-                      border: InputBorder.none,
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 14),
-                    ),
-                  ),
-                ),
-              ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  // ── Common Services ──────────────────────────────────────────
-
-  Widget _buildCommonServices() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(color: Color(0x14000000), blurRadius: 6, offset: Offset(0, 2)),
-        ],
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: List.generate(_commonServices.length, (i) {
-            final s = _commonServices[i];
-            final selected = _selectedServiceIndex == i;
-            return GestureDetector(
-              onTap: () {
-                setState(() => _selectedServiceIndex = i);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => SearchScreen(initialQuery: s['label'] as String),
-                  ),
-                );
-              },
-              child: Container(
-                margin: const EdgeInsets.only(right: 22),
-                child: Column(
-                  children: [
-                    Container(
-                      width: 54,
-                      height: 54,
-                      decoration: BoxDecoration(
-                        color: selected
-                            ? const Color(0xFFEDE9FF)
-                            : const Color(0xFFF5F5F5),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Icon(
-                        s['icon'] as IconData,
-                        size: 26,
-                        color: selected
-                            ? const Color(0xFF6950F4)
-                            : Colors.black38,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      s['label'] as String,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 11,
-                        fontWeight: selected
-                            ? FontWeight.w600
-                            : FontWeight.w400,
-                        color: selected
-                            ? const Color(0xFF6950F4)
-                            : Colors.black54,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: selected ? 20 : 0,
-                      height: 2.5,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6950F4),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }),
         ),
       ),
     );
@@ -767,63 +651,54 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   // ── Bottom Nav Bar ────────────────────────────────────────────
 
   Widget _buildBottomNav() {
-    final items = [
-      {'icon': Icons.home_rounded,              'label': 'Home'},
-      {'icon': Icons.grid_view_rounded,         'label': 'Category'},
-      {'icon': Icons.calendar_month_outlined,   'label': 'Booking'},
-      {'icon': Icons.person_outline_rounded,    'label': 'Profile'},
-    ];
-
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(color: Color(0x0F000000), blurRadius: 16, offset: Offset(0, -4)),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(items.length, (i) {
-              final selected = _selectedNavIndex == i;
-              return GestureDetector(
-                onTap: () => setState(() => _selectedNavIndex = i),
-                child: Container(
-                  color: Colors.transparent, // expand tap area
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        items[i]['icon'] as IconData,
-                        size: 26,
-                        color: selected
-                            ? const Color(0xFF6950F4)
-                            : Colors.black38,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        items[i]['label'] as String,
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 10,
-                          fontWeight: selected
-                              ? FontWeight.w600
-                              : FontWeight.w400,
-                          color: selected
-                              ? const Color(0xFF6950F4)
-                              : Colors.black38,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }),
-          ),
+    return BottomAppBar(
+      color: Colors.white,
+      elevation: 16,
+      shadowColor: Colors.black26,
+      shape: const CircularNotchedRectangle(),
+      notchMargin: 6,
+      child: Container(
+        height: 52,
+        padding: const EdgeInsets.symmetric(horizontal: 0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavItem(icon: Icons.home_rounded, label: 'Home', index: 0),
+            _buildNavItem(icon: Icons.grid_view_rounded, label: 'Category', index: 1),
+            const SizedBox(width: 40), // Reduced space for smaller FAB
+            _buildNavItem(icon: Icons.calendar_month_outlined, label: 'Booking', index: 2),
+            _buildNavItem(icon: Icons.person_outline_rounded, label: 'Profile', index: 3),
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem({required IconData icon, required String label, required int index}) {
+    final selected = _selectedNavIndex == index;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedNavIndex = index),
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            size: 24,
+            color: selected ? const Color(0xFF6950F4) : Colors.black38,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 10,
+              fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+              color: selected ? const Color(0xFF6950F4) : Colors.black38,
+            ),
+          ),
+        ],
       ),
     );
   }

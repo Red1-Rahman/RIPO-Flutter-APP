@@ -74,11 +74,16 @@ class CategoryScreen extends StatelessWidget {
 
   Widget _buildCustomHeader(BuildContext context) {
     return Container(
+      width: double.infinity,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [Color(0xFFB8A8F8), Color(0xFFE8D8FF)],
+        ),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
         ),
       ),
       child: SafeArea(
@@ -105,42 +110,6 @@ class CategoryScreen extends StatelessWidget {
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                   color: Colors.black54,
-                ),
-              ),
-              const SizedBox(height: 20),
-              GestureDetector(
-                onTap: () => _routeToSearch(context),
-                child: Container(
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 8,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const TextField(
-                    enabled: false,
-                    decoration: InputDecoration(
-                      hintText: 'Search ...',
-                      hintStyle: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 14,
-                        color: Colors.black38,
-                      ),
-                      prefixIcon: Icon(
-                        Icons.search_rounded,
-                        color: Colors.black38,
-                        size: 22,
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(vertical: 14),
-                    ),
-                  ),
                 ),
               ),
             ],
@@ -184,7 +153,7 @@ class CategoryScreen extends StatelessWidget {
         crossAxisCount: 4,
         crossAxisSpacing: 12,
         mainAxisSpacing: 16,
-        childAspectRatio: 0.8,
+        childAspectRatio: 0.7,
       ),
       itemCount: items.length,
       itemBuilder: (context, index) {
