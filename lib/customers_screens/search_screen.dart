@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ripo/data/api_exception.dart';
-import 'package:ripo/data/repositories/customer_repository.dart';
 import 'package:ripo/customers_screens/service_details_screen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -12,14 +10,10 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  final _customerRepository = CustomerRepository();
-
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _sortBy =
       'Recommended'; // Options: Recommended, Price (Low to High), Price (High to Low), Rating (High to Low)
-  bool _isLoading = true;
-  String? _error;
 
   @override
   void initState() {
@@ -28,56 +22,83 @@ class _SearchScreenState extends State<SearchScreen> {
       _searchQuery = widget.initialQuery;
       _searchController.text = widget.initialQuery;
     }
-    _loadServices();
   }
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  List<Map<String, dynamic>> _allServices = [];
-
-  Future<void> _loadServices() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-
-    try {
-      final services = await _customerRepository.fetchAllServices();
-      if (!mounted) return;
-
-      setState(() {
-        _allServices = services
-            .map(
-              (s) => {
-                'id': s['id']?.toString(),
-                'name': s['name'] ?? 'Service',
-                'discount': s['discount'] ?? '',
-                'price': s['price'] ?? 0,
-                'originalPrice': s['originalPrice'] ?? 0,
-                'rating': (s['rating'] as num?)?.toDouble() ?? 0.0,
-                'image': s['image'] ?? 'lib/media/AC_servicing.png',
-                'category': s['category'] ?? 'General',
-                'isFavorite': (s['isFavorite'] as bool?) ?? false,
-              },
-            )
-            .toList();
-      });
-    } on ApiException catch (e) {
-      if (!mounted) return;
-      setState(() => _error = e.message);
-    } catch (_) {
-      if (!mounted) return;
-      setState(() => _error = 'Failed to load services.');
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
+  // Rich mock data representing all services
+  final List<Map<String, dynamic>> _allServices = [
+    {
+      'name': 'Home Sanitization',
+      'discount': '40% OFF',
+      'price': 1200,
+      'originalPrice': '2,000',
+      'rating': 4.5,
+      'image': 'lib/media/clean_house_offer.png',
+      'isFavorite': false,
+    },
+    {
+      'name': 'AC Servicing',
+      'discount': '30% OFF',
+      'price': 1500,
+      'originalPrice': '2,100',
+      'rating': 4.8,
+      'image': 'lib/media/AC_servicing.png',
+      'isFavorite': true,
+    },
+    {
+      'name': 'Electronics Service',
+      'discount': '50% OFF',
+      'price': 800,
+      'originalPrice': '1,600',
+      'rating': 4.2,
+      'image': 'lib/media/electronics_servicing.png',
+      'isFavorite': false,
+    },
+    {
+      'name': 'Fan & Light Service',
+      'discount': '10% OFF',
+      'price': 300,
+      'originalPrice': '350',
+      'rating': 4.6,
+      'image': 'lib/media/fan_light_servicing.png',
+      'isFavorite': false,
+    },
+    {
+      'name': 'House Cleaning',
+      'discount': '20% OFF',
+      'price': 2000,
+      'originalPrice': '2,500',
+      'rating': 4.9,
+      'image': 'lib/media/clean_house_offer.png',
+      'isFavorite': false,
+    },
+    {
+      'name': 'Laundry Service',
+      'discount': '15% OFF',
+      'price': 500,
+      'originalPrice': '700',
+      'rating': 4.1,
+      'image': 'lib/media/loundry_washing_offer.png',
+      'isFavorite': false,
+    },
+    {
+      'name': 'TV Repair',
+      'discount': '25% OFF',
+      'price': 1800,
+      'originalPrice': '2,400',
+      'rating': 4.4,
+      'image': 'lib/media/TV_servicing.png',
+      'isFavorite': false,
+    },
+    {
+      'name': 'Painting',
+      'discount': '35% OFF',
+      'price': 3500,
+      'originalPrice': '4,500',
+      'rating': 4.7,
+      'image': 'lib/media/paint_servicing.png',
+      'isFavorite': true,
+    },
+  ];
 
   List<Map<String, dynamic>> get _filteredAndSortedServices {
     // Filter
@@ -104,17 +125,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
     // Sort
     if (_sortBy == 'Price (Low to High)') {
-      result.sort(
-        (a, b) => (a['price'] as num).compareTo(b['price'] as num),
-      );
+      result.sort((a, b) => (a['price'] as int).compareTo(b['price'] as int));
     } else if (_sortBy == 'Price (High to Low)') {
-      result.sort(
-        (a, b) => (b['price'] as num).compareTo(a['price'] as num),
-      );
+      result.sort((a, b) => (b['price'] as int).compareTo(a['price'] as int));
     } else if (_sortBy == 'Rating (High to Low)') {
       result.sort(
-        (a, b) => (b['rating'] as num).compareTo(a['rating'] as num),
-      );
+          (a, b) => (b['rating'] as double).compareTo(a['rating'] as double));
     }
 
     return result;
@@ -297,30 +313,6 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildSearchResults() {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.wifi_off_rounded, size: 56, color: Colors.black26),
-            const SizedBox(height: 12),
-            Text(
-              _error!,
-              textAlign: TextAlign.center,
-              style:
-                  const TextStyle(fontFamily: 'Inter', color: Colors.black54),
-            ),
-            const SizedBox(height: 10),
-            TextButton(onPressed: _loadServices, child: const Text('Retry')),
-          ],
-        ),
-      );
-    }
-
     final results = _filteredAndSortedServices;
 
     if (results.isEmpty) {
@@ -393,7 +385,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   Container(
                     color: const Color(0xFFF5F5F5),
                     child: Image.asset(
-                      (s['image'] as String?) ?? 'lib/media/AC_servicing.png',
+                      s['image'],
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -408,7 +400,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        (s['discount'] as String?) ?? '',
+                        s['discount'],
                         style: const TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 9,
@@ -428,7 +420,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    (s['name'] as String?) ?? 'Service',
+                    s['name'],
                     style: const TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 11,
@@ -462,7 +454,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   color: Colors.amber, size: 14),
                               const SizedBox(width: 4),
                               Text(
-                                ((s['rating'] as num?) ?? 0).toString(),
+                                s['rating'].toString(),
                                 style: const TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 10,

@@ -1,0 +1,6 @@
+cd backend
+dart run bin/server.dart
+
+
+
+flutter run -d chrome

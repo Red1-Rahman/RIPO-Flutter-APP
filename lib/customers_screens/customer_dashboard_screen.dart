@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:ripo/data/api_exception.dart';
-import 'package:ripo/data/repositories/customer_repository.dart';
 import 'package:ripo/customers_screens/search_screen.dart';
 import 'package:ripo/customers_screens/my_booking_screen.dart';
 import 'package:ripo/customers_screens/customer_profile_screen.dart';
@@ -17,12 +15,8 @@ class CustomerDashboardScreen extends StatefulWidget {
 }
 
 class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
-  final _customerRepository = CustomerRepository();
-
   int _currentOfferPage = 0;
   int _selectedNavIndex = 0;
-  bool _isLoadingServices = true;
-  String? _servicesError;
 
   late final PageController _offerPageController;
   Timer? _offerTimer;
@@ -118,12 +112,11 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     super.initState();
     _offerPageController = PageController();
     _startOfferAutoScroll();
-    _loadDashboardData();
   }
 
   void _startOfferAutoScroll() {
     _offerTimer = Timer.periodic(const Duration(seconds: 4), (_) {
-      if (_offerPageController.hasClients && _offers.isNotEmpty) {
+      if (_offerPageController.hasClients) {
         final next = (_currentOfferPage + 1) % _offers.length;
         _offerPageController.animateToPage(
           next,
@@ -132,74 +125,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
         );
       }
     });
-  }
-
-  Future<void> _loadDashboardData() async {
-    setState(() {
-      _isLoadingServices = true;
-      _servicesError = null;
-    });
-
-    try {
-      final recommended = await _customerRepository.fetchRecommendedServices();
-      final allServices = await _customerRepository.fetchAllServices();
-
-      if (!mounted) return;
-
-      _recommendedServices
-        ..clear()
-        ..addAll(
-          recommended.map(
-            (service) => {
-              'id': service['id']?.toString(),
-              'name': service['name'] ?? 'Unknown Service',
-              'discount': service['discount'] ?? '',
-              'price': service['price']?.toString() ?? '0',
-              'originalPrice': service['originalPrice']?.toString() ?? '0',
-              'image': service['image'] ?? 'lib/media/AC_servicing.png',
-              'category': service['category'] ?? 'General',
-            },
-          ),
-        );
-
-      _allServices
-        ..clear()
-        ..addAll(
-          allServices.map(
-            (service) => {
-              'id': service['id']?.toString(),
-              'image': service['image'] ?? 'lib/media/AC_servicing.png',
-              'label': service['name'] ?? 'Service',
-              'bg': _colorForCategory((service['category'] ?? '').toString()),
-            },
-          ),
-        )
-        ..add({
-          'icon': Icons.grid_view_rounded,
-          'label': 'Explore All',
-          'bg': const Color(0xFFF5F5F5),
-        });
-    } on ApiException catch (e) {
-      if (!mounted) return;
-      _servicesError = e.message;
-    } catch (_) {
-      if (!mounted) return;
-      _servicesError = 'Failed to load dashboard data.';
-    } finally {
-      if (mounted) {
-        setState(() => _isLoadingServices = false);
-      }
-    }
-  }
-
-  Color _colorForCategory(String category) {
-    final key = category.toLowerCase();
-    if (key.contains('ac')) return const Color(0xFFE8F4FD);
-    if (key.contains('elect')) return const Color(0xFFFFF3E0);
-    if (key.contains('clean')) return const Color(0xFFE8F5E9);
-    if (key.contains('paint')) return const Color(0xFFFCE4EC);
-    if (key.contains('water')) return const Color(0xFFFFFDE7);
-    return const Color(0xFFEDE9FF);
   }
 
   @override
@@ -216,74 +141,26 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
       children: [
         _buildHeader(),
         Expanded(
-          child: _isLoadingServices
-              ? const Center(child: CircularProgressIndicator())
-              : _servicesError != null
-                  ? _buildDashboardState(
-                      message: _servicesError!,
-                      actionLabel: 'Retry',
-                      onTap: _loadDashboardData,
-                    )
-                  : _recommendedServices.isEmpty && _allServices.isEmpty
-                      ? _buildDashboardState(
-                          message: 'No services available yet.',
-                          actionLabel: 'Refresh',
-                          onTap: _loadDashboardData,
-                        )
-                      : RefreshIndicator(
-                          onRefresh: _loadDashboardData,
-                          child: SingleChildScrollView(
-                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildOfferBanner(),
-                                const SizedBox(height: 24),
-                                _buildSectionHeader('Recommended Services'),
-                                const SizedBox(height: 14),
-                                _buildRecommendedServices(),
-                                const SizedBox(height: 26),
-                                _buildSectionHeader('All Services'),
-                                const SizedBox(height: 14),
-                                _buildAllServicesGrid(),
-                                const SizedBox(height: 24),
-                              ],
-                            ),
-                          ),
-                        ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDashboardState({
-    required String message,
-    required String actionLabel,
-    required Future<void> Function() onTap,
-  }) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.info_outline_rounded,
-              size: 44, color: Colors.black38),
-          const SizedBox(height: 12),
-          Text(
-            message,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 14,
-              color: Colors.black54,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildOfferBanner(),
+                const SizedBox(height: 24),
+                _buildSectionHeader('Recommended Services'),
+                const SizedBox(height: 14),
+                _buildRecommendedServices(),
+                const SizedBox(height: 26),
+                _buildSectionHeader('All Services'),
+                const SizedBox(height: 14),
+                _buildAllServicesGrid(),
+                const SizedBox(height: 24),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
-          TextButton(
-            onPressed: onTap,
-            child: Text(actionLabel),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
