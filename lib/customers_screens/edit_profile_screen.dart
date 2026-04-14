@@ -14,10 +14,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          'My Profile', 
+          'My Profile',
           style: TextStyle(
-            color: Colors.black87, 
-            fontWeight: FontWeight.w600, 
+            color: Colors.black87,
+            fontWeight: FontWeight.w600,
             fontFamily: 'Inter',
             fontSize: 18,
           ),
@@ -45,7 +45,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.black12, width: 2),
                     ),
-                    child: const Icon(Icons.person, size: 60, color: Colors.black38),
+                    child: const Icon(Icons.person,
+                        size: 60, color: Colors.black38),
                   ),
                   Positioned(
                     bottom: 0,
@@ -57,7 +58,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.white, width: 2),
                       ),
-                      child: const Icon(Icons.camera_alt, color: Colors.white, size: 16),
+                      child: const Icon(Icons.camera_alt,
+                          color: Colors.white, size: 16),
                     ),
                   ),
                 ],
@@ -81,7 +83,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               },
               borderRadius: BorderRadius.circular(8),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black12),
                   borderRadius: BorderRadius.circular(8),
@@ -91,20 +94,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   children: const [
                     Row(
                       children: [
-                        Icon(Icons.lock_outline_rounded, color: Color(0xFF6950F4), size: 20),
+                        Icon(Icons.lock_outline_rounded,
+                            color: Color(0xFF6950F4), size: 20),
                         SizedBox(width: 12),
                         Text(
                           'Change Password',
                           style: TextStyle(
-                            fontFamily: 'Inter', 
-                            fontSize: 15, 
-                            fontWeight: FontWeight.w600, 
+                            fontFamily: 'Inter',
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
                             color: Colors.black87,
                           ),
                         ),
                       ],
                     ),
-                    Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.black54),
+                    Icon(Icons.arrow_forward_ios_rounded,
+                        size: 16, color: Colors.black54),
                   ],
                 ),
               ),
@@ -113,26 +118,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ElevatedButton(
               onPressed: () {
                 // Dummy Success interaction
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Profile updated successfully!'),
-                    backgroundColor: Colors.green,
-                  )
-                );
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Profile updated successfully!'),
+                  backgroundColor: Colors.green,
+                ));
                 Navigator.pop(context); // Go back after save
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6950F4),
                 minimumSize: const Size(double.infinity, 54),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
                 elevation: 2,
               ),
               child: const Text(
-                'Save Changes', 
+                'Save Changes',
                 style: TextStyle(
-                  fontFamily: 'Inter', 
-                  fontSize: 16, 
-                  color: Colors.white, 
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                  color: Colors.white,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -151,9 +155,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         Text(
           label,
           style: const TextStyle(
-            fontFamily: 'Inter', 
-            fontSize: 13, 
-            color: Colors.black54, 
+            fontFamily: 'Inter',
+            fontSize: 13,
+            color: Colors.black54,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -161,14 +165,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         TextFormField(
           initialValue: value,
           style: const TextStyle(
-            fontFamily: 'Inter', 
-            fontSize: 15, 
-            fontWeight: FontWeight.w500, 
+            fontFamily: 'Inter',
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
             color: Colors.black87,
           ),
           decoration: InputDecoration(
-            suffixIcon: const Icon(Icons.edit_outlined, size: 20, color: Color(0xFF6950F4)), // The requested pen symbol
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            suffixIcon: const Icon(Icons.edit_outlined,
+                size: 20, color: Color(0xFF6950F4)), // The requested pen symbol
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Colors.black12),
@@ -179,7 +185,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0xFF6950F4), width: 1.5), // Purple focus
+              borderSide: const BorderSide(
+                  color: Color(0xFF6950F4), width: 1.5), // Purple focus
             ),
           ),
         ),

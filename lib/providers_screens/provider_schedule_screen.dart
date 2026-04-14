@@ -9,9 +9,17 @@ class ProviderScheduleScreen extends StatefulWidget {
 }
 
 class _ProviderScheduleScreenState extends State<ProviderScheduleScreen> {
-  final List<String> _weekDays = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+  final List<String> _weekDays = [
+    'Sat',
+    'Sun',
+    'Mon',
+    'Tue',
+    'Wed',
+    'Thu',
+    'Fri'
+  ];
   final Set<String> _selectedDays = {'Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu'};
-  
+
   TimeOfDay _startTime = const TimeOfDay(hour: 9, minute: 0);
   TimeOfDay _endTime = const TimeOfDay(hour: 18, minute: 0);
 
@@ -66,7 +74,11 @@ class _ProviderScheduleScreenState extends State<ProviderScheduleScreen> {
         ),
         title: const Text(
           'Working Schedule',
-          style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w700, color: Colors.black87, fontSize: 18),
+          style: TextStyle(
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w700,
+              color: Colors.black87,
+              fontSize: 18),
         ),
       ),
       body: SingleChildScrollView(
@@ -76,12 +88,17 @@ class _ProviderScheduleScreenState extends State<ProviderScheduleScreen> {
           children: [
             const Text(
               'Active Days',
-              style: TextStyle(fontFamily: 'Inter', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black87),
+              style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black87),
             ),
             const SizedBox(height: 8),
             const Text(
               'Select the days you are available to take bookings.',
-              style: TextStyle(fontFamily: 'Inter', fontSize: 13, color: Colors.black54),
+              style: TextStyle(
+                  fontFamily: 'Inter', fontSize: 13, color: Colors.black54),
             ),
             const SizedBox(height: 16),
             Wrap(
@@ -103,8 +120,14 @@ class _ProviderScheduleScreenState extends State<ProviderScheduleScreen> {
                     width: 60,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: isSelected ? const Color(0xFF6950F4).withValues(alpha: 0.1) : Colors.white,
-                      border: Border.all(color: isSelected ? const Color(0xFF6950F4) : Colors.black12, width: 1.5),
+                      color: isSelected
+                          ? const Color(0xFF6950F4).withValues(alpha: 0.1)
+                          : Colors.white,
+                      border: Border.all(
+                          color: isSelected
+                              ? const Color(0xFF6950F4)
+                              : Colors.black12,
+                          width: 1.5),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     alignment: Alignment.center,
@@ -113,7 +136,9 @@ class _ProviderScheduleScreenState extends State<ProviderScheduleScreen> {
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w600,
-                        color: isSelected ? const Color(0xFF6950F4) : Colors.black54,
+                        color: isSelected
+                            ? const Color(0xFF6950F4)
+                            : Colors.black54,
                       ),
                     ),
                   ),
@@ -123,12 +148,17 @@ class _ProviderScheduleScreenState extends State<ProviderScheduleScreen> {
             const SizedBox(height: 32),
             const Text(
               'Active Hours',
-              style: TextStyle(fontFamily: 'Inter', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black87),
+              style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black87),
             ),
             const SizedBox(height: 8),
             const Text(
               'Set your standard working hours for active days.',
-              style: TextStyle(fontFamily: 'Inter', fontSize: 13, color: Colors.black54),
+              style: TextStyle(
+                  fontFamily: 'Inter', fontSize: 13, color: Colors.black54),
             ),
             const SizedBox(height: 16),
             Row(
@@ -154,9 +184,9 @@ class _ProviderScheduleScreenState extends State<ProviderScheduleScreen> {
             GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () {
-                 FocusScope.of(context).unfocus();
-                 if (!mounted) return;
-                 widget.onBack();
+                FocusScope.of(context).unfocus();
+                if (!mounted) return;
+                widget.onBack();
               },
               child: Container(
                 width: double.infinity,
@@ -168,7 +198,11 @@ class _ProviderScheduleScreenState extends State<ProviderScheduleScreen> {
                 alignment: Alignment.center,
                 child: const Text(
                   'Save Schedule',
-                  style: TextStyle(fontFamily: 'Inter', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white),
                 ),
               ),
             ),
@@ -178,7 +212,10 @@ class _ProviderScheduleScreenState extends State<ProviderScheduleScreen> {
     );
   }
 
-  Widget _buildTimePickerBlock({required String label, required TimeOfDay time, required VoidCallback onTap}) {
+  Widget _buildTimePickerBlock(
+      {required String label,
+      required TimeOfDay time,
+      required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -191,7 +228,9 @@ class _ProviderScheduleScreenState extends State<ProviderScheduleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: const TextStyle(fontFamily: 'Inter', fontSize: 13, color: Colors.black54)),
+            Text(label,
+                style: const TextStyle(
+                    fontFamily: 'Inter', fontSize: 13, color: Colors.black54)),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -205,7 +244,8 @@ class _ProviderScheduleScreenState extends State<ProviderScheduleScreen> {
                     color: Colors.black87,
                   ),
                 ),
-                const Icon(Icons.access_time_rounded, color: Color(0xFF6950F4), size: 20),
+                const Icon(Icons.access_time_rounded,
+                    color: Color(0xFF6950F4), size: 20),
               ],
             )
           ],

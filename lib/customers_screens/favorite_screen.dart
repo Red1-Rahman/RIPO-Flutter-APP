@@ -14,7 +14,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       'id': '1',
       'name': 'AC Servicing Core',
       'provider': 'Tanvir Mahmud',
-      'image': 'lib/media/AC_servicing.png', 
+      'image': 'lib/media/AC_servicing.png',
     },
     {
       'id': '2',
@@ -26,7 +26,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       'id': '3',
       'name': 'Basic Plumbing Fixes',
       'provider': 'Shaidul Islam',
-      'image': 'lib/media/plumbing.png', 
+      'image': 'lib/media/plumbing.png',
     },
   ];
 
@@ -34,7 +34,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     setState(() {
       _favorites.removeAt(index);
     });
-    
+
     // Smooth responsive feedback to the user on deletion
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -74,13 +74,13 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: _favorites.isEmpty 
+      body: _favorites.isEmpty
           ? const Center(
               child: Text(
                 'No favorites yet.',
                 style: TextStyle(
-                  fontFamily: 'Inter', 
-                  fontSize: 16, 
+                  fontFamily: 'Inter',
+                  fontSize: 16,
                   color: Colors.black45,
                 ),
               ),
@@ -99,8 +99,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: const [
                       BoxShadow(
-                        color: Color(0x0A000000), 
-                        blurRadius: 8, 
+                        color: Color(0x0A000000),
+                        blurRadius: 8,
                         offset: Offset(0, 2),
                       ),
                     ],
@@ -120,14 +120,15 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                             errorBuilder: (context, error, stackTrace) {
                               // Safely fallback if image asset is not natively available locally
                               return const Center(
-                                child: Icon(Icons.image_rounded, color: Colors.black26),
+                                child: Icon(Icons.image_rounded,
+                                    color: Colors.black26),
                               );
                             },
                           ),
                         ),
                       ),
                       const SizedBox(width: 14),
-                      // Text Identifiers Block 
+                      // Text Identifiers Block
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,7 +161,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                       ),
                       // The Filled Heart Action Button
                       IconButton(
-                        onPressed: () => _removeFavorite(index, favorite['name']),
+                        onPressed: () =>
+                            _removeFavorite(index, favorite['name']),
                         icon: const Icon(
                           Icons.favorite,
                           color: Colors.redAccent,

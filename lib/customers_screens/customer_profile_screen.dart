@@ -61,7 +61,8 @@ class CustomerProfileScreen extends StatelessWidget {
   Widget _buildHeader() {
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(16, 60, 16, 24), // Accounts for status bar
+      padding:
+          const EdgeInsets.fromLTRB(16, 60, 16, 24), // Accounts for status bar
       child: Row(
         children: [
           Container(
@@ -139,7 +140,8 @@ class CustomerProfileScreen extends StatelessWidget {
               crossAxisCount: 4,
               crossAxisSpacing: 10,
               mainAxisSpacing: 20,
-              childAspectRatio: 0.75, // Adjusting aspect ratio to make room for text
+              childAspectRatio:
+                  0.75, // Adjusting aspect ratio to make room for text
             ),
             itemCount: items.length,
             itemBuilder: (context, index) {
@@ -181,31 +183,32 @@ class CustomerProfileScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                    width: 46,
-                    height: 46,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFF2EFFF), // Very light purple background
-                      shape: BoxShape.circle,
+                      width: 46,
+                      height: 46,
+                      decoration: const BoxDecoration(
+                        color:
+                            Color(0xFFF2EFFF), // Very light purple background
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        item['icon'] as IconData,
+                        color: const Color(0xFF6950F4), // Primary purple
+                        size: 22,
+                      ),
                     ),
-                    child: Icon(
-                      item['icon'] as IconData,
-                      color: const Color(0xFF6950F4), // Primary purple
-                      size: 22,
+                    const SizedBox(height: 8),
+                    Text(
+                      item['label'] as String,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    item['label'] as String,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
               );
             },
           ),
@@ -262,22 +265,28 @@ class CustomerProfileScreen extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: Color(0x336950F4), blurRadius: 10, offset: Offset(0, 4))],
+        boxShadow: const [
+          BoxShadow(
+              color: Color(0x336950F4), blurRadius: 10, offset: Offset(0, 4))
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildStatItem('Bookings', '12', Icons.task_alt_rounded, Colors.white),
+          _buildStatItem(
+              'Bookings', '12', Icons.task_alt_rounded, Colors.white),
           Container(width: 1, height: 40, color: Colors.white24),
           _buildStatItem('Points', '250', Icons.stars_rounded, Colors.amber),
           Container(width: 1, height: 40, color: Colors.white24),
-          _buildStatItem('Tier', 'Gold', Icons.shield_rounded, const Color(0xFFFFD700)),
+          _buildStatItem(
+              'Tier', 'Gold', Icons.shield_rounded, const Color(0xFFFFD700)),
         ],
       ),
     );
   }
 
-  Widget _buildStatItem(String label, String value, IconData icon, Color iconColor) {
+  Widget _buildStatItem(
+      String label, String value, IconData icon, Color iconColor) {
     return Column(
       children: [
         Row(
@@ -285,11 +294,21 @@ class CustomerProfileScreen extends StatelessWidget {
           children: [
             Icon(icon, color: iconColor, size: 16),
             const SizedBox(width: 4),
-            Text(value, style: const TextStyle(fontFamily: 'Inter', fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
+            Text(value,
+                style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white)),
           ],
         ),
         const SizedBox(height: 4),
-        Text(label, style: const TextStyle(fontFamily: 'Inter', fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white70)),
+        Text(label,
+            style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Colors.white70)),
       ],
     );
   }

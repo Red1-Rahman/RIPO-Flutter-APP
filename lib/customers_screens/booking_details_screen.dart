@@ -1,173 +1,165 @@
 import 'package:flutter/material.dart';
+import 'package:ripo/data/repositories/booking_repository.dart';
 
-class BookingDetailsScreen extends StatelessWidget {
+class BookingDetailsScreen extends StatefulWidget {
   final Map<String, dynamic>? bookingData;
-
   const BookingDetailsScreen({super.key, this.bookingData});
 
   @override
-  Widget build(BuildContext context) {
-    final status = bookingData?['status'] ?? 'pending';
+  State<BookingDetailsScreen> createState() => _BookingDetailsScreenState();
+}
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF9F9FB),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        shadowColor: Colors.black12,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Booking Details',
-          style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-        ),
-        actions: [
-          Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFDF0D5), // Light orange mock
-                borderRadius: BorderRadius.circular(6),
+class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
+  final BookingRepository _bookingRepository = BookingRepository();
+
+  Future<Map<String, dynamic>> _loadBookingData() async {
+    final bookingId = widget.bookingData?['id']?.toString();
+    if (bookingId == null || bookingId.isEmpty) {
+      return Map<String, dynamic>.from(widget.bookingData ?? {});
+    }
+
+    try {
+      return await _bookingRepository.fetchBookingDetails(bookingId);
+    } catch (_) {
+      return Map<String, dynamic>.from(widget.bookingData ?? {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _loadBookingData(),
+      builder: (context, snapshot) {
+        final data = snapshot.data ??
+            Map<String, dynamic>.from(widget.bookingData ?? {});
+        final status = (data['status'] ?? 'Pending').toString();
+
+        return Scaffold(
+          backgroundColor: const Color(0xFFF9F9FB),
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0.5,
+            shadowColor: Colors.black12,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: const Text(
+              'Booking Details',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
               ),
-              child: Text(
-                status.toLowerCase(),
-                style: const TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFFF39C12),
+            ),
+            actions: [
+              Center(child: _statusPill(status)),
+              const SizedBox(width: 12),
+            ],
+          ),
+          body: snapshot.connectionState == ConnectionState.waiting &&
+                  data.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      _buildBookingInfoCard(data),
+                      const SizedBox(height: 16),
+                      _buildProviderCard(data),
+                      const SizedBox(height: 16),
+                      _buildPaymentCard(data),
+                      const SizedBox(height: 16),
+                      _buildSummaryCard(data),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Center(
-            child: Container(
-              margin: const EdgeInsets.only(right: 16),
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: Colors.black12),
-              ),
-              child: const Icon(Icons.print_outlined, size: 20, color: Colors.black54),
-            ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildBookingInfoCard(),
-            const SizedBox(height: 16),
-            _buildServiceProviderCard(),
-            const SizedBox(height: 16),
-            _buildPaymentMethodCard(),
-            const SizedBox(height: 16),
-            _buildServiceSummaryCard(),
-            const SizedBox(height: 20),
-          ],
+        );
+      },
+    );
+  }
+
+  Widget _statusPill(String status) {
+    Color bgColor = const Color(0xFFFDF0D5);
+    Color textColor = const Color(0xFFF39C12);
+
+    final lower = status.toLowerCase();
+    if (lower.contains('complete')) {
+      bgColor = const Color(0xFFD5F5E3);
+      textColor = const Color(0xFF2E7D32);
+    } else if (lower.contains('reject')) {
+      bgColor = const Color(0xFFFADBD8);
+      textColor = const Color(0xFFD32F2F);
+    } else if (lower.contains('progress')) {
+      bgColor = const Color(0xFFE2E4FF);
+      textColor = const Color(0xFF5D5FEF);
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration:
+          BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(6)),
+      child: Text(
+        status,
+        style: TextStyle(
+          fontFamily: 'Inter',
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: textColor,
         ),
       ),
     );
   }
 
-  Widget _buildBookingInfoCard() {
+  Widget _buildBookingInfoCard(Map<String, dynamic> data) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
-          BoxShadow(color: Color(0x0A000000), blurRadius: 10, offset: Offset(0, 2)),
+          BoxShadow(
+              color: Color(0x0A000000), blurRadius: 10, offset: Offset(0, 2))
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RichText(
-                    text: TextSpan(
-                      text: 'Booking Id:',
-                      style: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black87,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: bookingData?['id'] ?? '245148',
-                          style: const TextStyle(color: Color(0xFF6950F4)),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    '12 May 2024-10:30AM',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black45,
-                    ),
-                  ),
-                ],
+          RichText(
+            text: TextSpan(
+              text: 'Booking Id: ',
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: Colors.black87,
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6950F4),
-                  borderRadius: BorderRadius.circular(6),
+              children: [
+                TextSpan(
+                  text: data['id']?.toString() ?? 'N/A',
+                  style: const TextStyle(color: Color(0xFF6950F4)),
                 ),
-                child: Row(
-                  children: const [
-                    Icon(Icons.chevron_right_rounded, color: Colors.white, size: 14),
-                    Text(
-                      'View',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          _buildProgressTracker(),
-          const SizedBox(height: 24),
-          const Text(
-            'Booking Summary',
-            style: TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: Colors.black87,
+              ],
             ),
           ),
-          const SizedBox(height: 12),
-          _buildSummaryRow('Booking Date:', bookingData?['date'] ?? '8 Dec 2024-11am-12pm'),
+          const SizedBox(height: 8),
+          Text(
+            data['dateTime']?.toString() ??
+                data['date']?.toString() ??
+                'Not scheduled',
+            style: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.black45,
+            ),
+          ),
+          const SizedBox(height: 14),
+          _buildSummaryRow('Address:', data['address']?.toString() ?? 'N/A'),
           const SizedBox(height: 6),
-          _buildSummaryRow('Address:', 'house 57,Road 25, Block A, Banani'),
+          _buildSummaryRow('Status:', data['status']?.toString() ?? 'Pending'),
         ],
       ),
     );
@@ -178,7 +170,7 @@ class BookingDetailsScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 100,
+          width: 90,
           child: Text(
             label,
             style: const TextStyle(
@@ -195,7 +187,7 @@ class BookingDetailsScreen extends StatelessWidget {
             style: const TextStyle(
               fontFamily: 'Inter',
               color: Colors.black87,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
               fontSize: 13,
             ),
           ),
@@ -204,162 +196,41 @@ class BookingDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProgressTracker() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _buildProgressStep('Accepted', true, false),
-        Expanded(child: Container(height: 1, color: Colors.black12)),
-        _buildProgressStep('In progress', true, false),
-        Expanded(child: Container(height: 1, color: Colors.black12)),
-        _buildProgressStep('Completed', true, false),
-        Expanded(child: Container(height: 1, color: Colors.black12)),
-        _buildProgressStep('Rejected', true, true), // Last step
-      ],
-    );
-  }
+  Widget _buildProviderCard(Map<String, dynamic> data) {
+    final providerRaw = data['provider'];
+    final provider = providerRaw is Map
+        ? Map<String, dynamic>.from(providerRaw)
+        : <String, dynamic>{};
 
-  Widget _buildProgressStep(String label, bool isDone, bool isLast) {
-    return Column(
-      children: [
-        Container(
-          width: 20,
-          height: 20,
-          decoration: const BoxDecoration(
-            color: Color(0xFFF0F0F0),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(Icons.check, size: 14, color: Colors.black38),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          label,
-          style: const TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 10,
-            fontWeight: FontWeight.w600,
-            color: Colors.black38,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildServiceProviderCard() {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
-          BoxShadow(color: Color(0x0A000000), blurRadius: 10, offset: Offset(0, 2)),
+          BoxShadow(
+              color: Color(0x0A000000), blurRadius: 10, offset: Offset(0, 2))
         ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text(
-                'Service Provider',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black87,
-                ),
-              ),
-              Text(
-                'Write Review',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black38, // Grey
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.person, size: 30, color: Colors.black54),
-                    // In a real app we would load 'lib/media/avatar.png'
-                  ),
-                  Positioned(
-                    right: 2,
-                    top: 2,
-                    child: Container(
-                      width: 10,
-                      height: 10,
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Tanvir Mahmud',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      _buildActionBtn(Icons.phone, 'Call', const Color(0xFF6950F4), Colors.white),
-                      const SizedBox(width: 10),
-                      _buildActionBtn(Icons.chat_outlined, 'Chat', const Color(0xFFF5F5F5), const Color(0xFF4285F4)),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionBtn(IconData icon, String label, Color bgColor, Color fgColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: fgColor),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: fgColor,
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+                color: Colors.grey.shade200, shape: BoxShape.circle),
+            child: const Icon(Icons.person, size: 30, color: Colors.black54),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              provider['name']?.toString() ?? 'Service Provider',
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: Colors.black87,
+              ),
             ),
           ),
         ],
@@ -367,96 +238,73 @@ class BookingDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPaymentMethodCard() {
+  Widget _buildPaymentCard(Map<String, dynamic> data) {
+    final paymentRaw = data['payment'];
+    final payment = paymentRaw is Map
+        ? Map<String, dynamic>.from(paymentRaw)
+        : <String, dynamic>{};
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
-          BoxShadow(color: Color(0x0A000000), blurRadius: 10, offset: Offset(0, 2)),
+          BoxShadow(
+              color: Color(0x0A000000), blurRadius: 10, offset: Offset(0, 2))
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Payment Method',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black87,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFADBD8),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: const Text(
-                  'Unpaid',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFFE74C3C),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
           const Text(
-            'Payment by: Pay Offline',
+            'Payment Method',
             style: TextStyle(
               fontFamily: 'Inter',
-              color: Colors.black38,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Payment by: ${payment['method']?.toString() ?? 'Pay Offline'}',
+            style: const TextStyle(
+              fontFamily: 'Inter',
+              color: Colors.black54,
               fontWeight: FontWeight.w600,
               fontSize: 13,
             ),
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              const Text(
-                'Total Amount:',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  color: Colors.black38,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(width: 6),
-              Text(
-                bookingData?['price'] ?? '\$900',
-                style: const TextStyle(
-                  fontFamily: 'Inter',
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 14,
-                ),
-              ),
-            ],
+          const SizedBox(height: 8),
+          Text(
+            'Total Amount: BDT ${payment['amount']?.toString() ?? data['price']?.toString() ?? '0'}',
+            style: const TextStyle(
+              fontFamily: 'Inter',
+              color: Colors.black87,
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildServiceSummaryCard() {
+  Widget _buildSummaryCard(Map<String, dynamic> data) {
+    final serviceRaw = data['service'];
+    final service = serviceRaw is Map
+        ? Map<String, dynamic>.from(serviceRaw)
+        : <String, dynamic>{};
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
-          BoxShadow(color: Color(0x0A000000), blurRadius: 10, offset: Offset(0, 2)),
+          BoxShadow(
+              color: Color(0x0A000000), blurRadius: 10, offset: Offset(0, 2))
         ],
       ),
       child: Column(
@@ -472,48 +320,23 @@ class BookingDetailsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          const Divider(height: 1, color: Colors.black12),
-          const SizedBox(height: 16),
-          const Text(
-            'AC Cooling Problem',
-            style: TextStyle(
+          Text(
+            service['name']?.toString() ?? 'Service',
+            style: const TextStyle(
               fontFamily: 'Inter',
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: Colors.black87,
             ),
           ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              RichText(
-                text: const TextSpan(
-                  text: 'Qty:',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black38,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: '1',
-                      style: TextStyle(color: Colors.black87),
-                    ),
-                  ],
-                ),
-              ),
-              const Text(
-                '\$500',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black87,
-                ),
-              ),
-            ],
+          const SizedBox(height: 6),
+          Text(
+            'Category: ${service['category']?.toString() ?? 'General'}',
+            style: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 13,
+              color: Colors.black54,
+            ),
           ),
         ],
       ),

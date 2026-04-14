@@ -6,8 +6,8 @@ class ServiceDetailsScreen extends StatefulWidget {
   final bool isProviderPreview;
 
   const ServiceDetailsScreen({
-    super.key, 
-    this.serviceData, 
+    super.key,
+    this.serviceData,
     this.isProviderPreview = false,
   });
 
@@ -27,7 +27,8 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String baseImage = widget.serviceData?['image'] ?? 'lib/media/AC_servicing.png';
+    String baseImage =
+        widget.serviceData?['image'] ?? 'lib/media/AC_servicing.png';
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -100,9 +101,14 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
           ),
         ] else ...[
           Container(
-             alignment: Alignment.center,
-             padding: const EdgeInsets.only(right: 16),
-             child: const Text('PREVIEW', style: TextStyle(fontFamily: 'Inter', color: Color(0xFF6950F4), fontWeight: FontWeight.bold, fontSize: 12)),
+            alignment: Alignment.center,
+            padding: const EdgeInsets.only(right: 16),
+            child: const Text('PREVIEW',
+                style: TextStyle(
+                    fontFamily: 'Inter',
+                    color: Color(0xFF6950F4),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12)),
           )
         ]
       ],
@@ -604,32 +610,43 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
       ),
       child: SafeArea(
         child: ElevatedButton(
-          onPressed: widget.isProviderPreview 
-            ? () { Navigator.pop(context); } 
-            : () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => BookingScheduleScreen(serviceData: widget.serviceData),
-                  ),
-                );
-              },
+          onPressed: widget.isProviderPreview
+              ? () {
+                  Navigator.pop(context);
+                }
+              : () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BookingScheduleScreen(
+                          serviceData: widget.serviceData),
+                    ),
+                  );
+                },
           style: ElevatedButton.styleFrom(
-            backgroundColor: widget.isProviderPreview ? Colors.white : const Color(0xFF6950F4),
+            backgroundColor: widget.isProviderPreview
+                ? Colors.white
+                : const Color(0xFF6950F4),
             minimumSize: const Size(double.infinity, 54),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(28),
-              side: widget.isProviderPreview ? const BorderSide(color: Color(0xFF6950F4), width: 2) : BorderSide.none,
+              side: widget.isProviderPreview
+                  ? const BorderSide(color: Color(0xFF6950F4), width: 2)
+                  : BorderSide.none,
             ),
             elevation: 0,
           ),
           child: Text(
-            widget.isProviderPreview ? 'Close Preview' : 'Book / Schedule Service',
+            widget.isProviderPreview
+                ? 'Close Preview'
+                : 'Book / Schedule Service',
             style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: widget.isProviderPreview ? const Color(0xFF6950F4) : Colors.white,
+              color: widget.isProviderPreview
+                  ? const Color(0xFF6950F4)
+                  : Colors.white,
             ),
           ),
         ),

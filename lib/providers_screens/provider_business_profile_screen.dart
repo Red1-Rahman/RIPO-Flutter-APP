@@ -5,10 +5,12 @@ class ProviderBusinessProfileScreen extends StatefulWidget {
   const ProviderBusinessProfileScreen({super.key, required this.onBack});
 
   @override
-  State<ProviderBusinessProfileScreen> createState() => _ProviderBusinessProfileScreenState();
+  State<ProviderBusinessProfileScreen> createState() =>
+      _ProviderBusinessProfileScreenState();
 }
 
-class _ProviderBusinessProfileScreenState extends State<ProviderBusinessProfileScreen> {
+class _ProviderBusinessProfileScreenState
+    extends State<ProviderBusinessProfileScreen> {
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -48,24 +50,46 @@ class _ProviderBusinessProfileScreenState extends State<ProviderBusinessProfileS
             children: [
               _buildImageUploader(),
               const SizedBox(height: 24),
-              const Text('Basic Information', style: TextStyle(fontFamily: 'Inter', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black87)),
+              const Text('Basic Information',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87)),
               const SizedBox(height: 16),
-              _buildInputField(label: 'Business Name', initialValue: 'Elite Servicing BD'),
+              _buildInputField(
+                  label: 'Business Name', initialValue: 'Elite Servicing BD'),
               const SizedBox(height: 16),
-              _buildInputField(label: 'Owner Name', initialValue: 'Shaidul Islam'),
+              _buildInputField(
+                  label: 'Owner Name', initialValue: 'Shaidul Islam'),
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Expanded(child: _buildInputField(label: 'Phone Number', initialValue: '+880 1711-223344', keyboardType: TextInputType.phone)),
+                  Expanded(
+                      child: _buildInputField(
+                          label: 'Phone Number',
+                          initialValue: '+880 1711-223344',
+                          keyboardType: TextInputType.phone)),
                   const SizedBox(width: 16),
-                  Expanded(child: _buildInputField(label: 'Experience', initialValue: '5 Years', keyboardType: TextInputType.text)),
+                  Expanded(
+                      child: _buildInputField(
+                          label: 'Experience',
+                          initialValue: '5 Years',
+                          keyboardType: TextInputType.text)),
                 ],
               ),
               const SizedBox(height: 16),
-              _buildInputField(label: 'Email Address', initialValue: 'shaidul@eliteservicing.com', keyboardType: TextInputType.emailAddress),
+              _buildInputField(
+                  label: 'Email Address',
+                  initialValue: 'shaidul@eliteservicing.com',
+                  keyboardType: TextInputType.emailAddress),
               const SizedBox(height: 24),
-
-              const Text('Business Details', style: TextStyle(fontFamily: 'Inter', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black87)),
+              const Text('Business Details',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87)),
               const SizedBox(height: 16),
               _buildInputField(
                 label: 'Business Address',
@@ -75,16 +99,24 @@ class _ProviderBusinessProfileScreenState extends State<ProviderBusinessProfileS
               const SizedBox(height: 16),
               _buildInputField(
                 label: 'Bio / About the Company',
-                initialValue: 'We are a premium servicing company providing top notch AC, Fridge, and House Cleaning services across Dhaka.',
+                initialValue:
+                    'We are a premium servicing company providing top notch AC, Fridge, and House Cleaning services across Dhaka.',
                 maxLines: 4,
               ),
               const SizedBox(height: 24),
-              const Text('Verification & Legal', style: TextStyle(fontFamily: 'Inter', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black87)),
+              const Text('Verification & Legal',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87)),
               const SizedBox(height: 16),
-              _buildInputField(label: 'Trade License Number (Optional)', initialValue: 'TL-9843-DHK'),
+              _buildInputField(
+                  label: 'Trade License Number (Optional)',
+                  initialValue: 'TL-9843-DHK'),
               const SizedBox(height: 16),
-              _buildInputField(label: 'NID Number', initialValue: '1995 8293 8472 8394'),
-
+              _buildInputField(
+                  label: 'NID Number', initialValue: '1995 8293 8472 8394'),
               const SizedBox(height: 40),
             ],
           ),
@@ -94,15 +126,18 @@ class _ProviderBusinessProfileScreenState extends State<ProviderBusinessProfileS
         padding: const EdgeInsets.all(16),
         decoration: const BoxDecoration(
           color: Colors.white,
-          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, -2))],
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black12, blurRadius: 10, offset: Offset(0, -2))
+          ],
         ),
         child: SafeArea(
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () {
-               FocusScope.of(context).unfocus();
-               if (!mounted) return;
-               widget.onBack();
+              FocusScope.of(context).unfocus();
+              if (!mounted) return;
+              widget.onBack();
             },
             child: Container(
               width: double.infinity,
@@ -114,7 +149,11 @@ class _ProviderBusinessProfileScreenState extends State<ProviderBusinessProfileS
               alignment: Alignment.center,
               child: const Text(
                 'Save Profile Updates',
-                style: TextStyle(fontFamily: 'Inter', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+                style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white),
               ),
             ),
           ),
@@ -136,7 +175,8 @@ class _ProviderBusinessProfileScreenState extends State<ProviderBusinessProfileS
               border: Border.all(color: const Color(0xFF6950F4), width: 2),
               color: const Color(0xFFE8F4FD),
               image: const DecorationImage(
-                image: AssetImage('lib/media/clean_house_offer.png'), // Mock profile picture
+                image: AssetImage(
+                    'lib/media/clean_house_offer.png'), // Mock profile picture
                 fit: BoxFit.cover,
               ),
             ),
@@ -151,7 +191,8 @@ class _ProviderBusinessProfileScreenState extends State<ProviderBusinessProfileS
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 2),
               ),
-              child: const Icon(Icons.camera_alt_rounded, size: 16, color: Colors.white),
+              child: const Icon(Icons.camera_alt_rounded,
+                  size: 16, color: Colors.white),
             ),
           ),
         ],
@@ -168,17 +209,24 @@ class _ProviderBusinessProfileScreenState extends State<ProviderBusinessProfileS
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontFamily: 'Inter', fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54)),
+        Text(label,
+            style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.black54)),
         const SizedBox(height: 8),
         TextFormField(
           initialValue: initialValue,
           keyboardType: keyboardType,
           maxLines: maxLines,
-          style: const TextStyle(fontFamily: 'Inter', fontSize: 14, color: Colors.black87),
+          style: const TextStyle(
+              fontFamily: 'Inter', fontSize: 14, color: Colors.black87),
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: Colors.black12),
@@ -189,7 +237,8 @@ class _ProviderBusinessProfileScreenState extends State<ProviderBusinessProfileS
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF6950F4), width: 1.5),
+              borderSide:
+                  const BorderSide(color: Color(0xFF6950F4), width: 1.5),
             ),
           ),
         ),

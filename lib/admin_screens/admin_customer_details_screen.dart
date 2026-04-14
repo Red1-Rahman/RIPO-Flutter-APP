@@ -6,10 +6,12 @@ class AdminCustomerDetailsScreen extends StatefulWidget {
   const AdminCustomerDetailsScreen({super.key, required this.name});
 
   @override
-  State<AdminCustomerDetailsScreen> createState() => _AdminCustomerDetailsScreenState();
+  State<AdminCustomerDetailsScreen> createState() =>
+      _AdminCustomerDetailsScreenState();
 }
 
-class _AdminCustomerDetailsScreenState extends State<AdminCustomerDetailsScreen> {
+class _AdminCustomerDetailsScreenState
+    extends State<AdminCustomerDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +24,11 @@ class _AdminCustomerDetailsScreenState extends State<AdminCustomerDetailsScreen>
         iconTheme: const IconThemeData(color: Colors.black87),
         title: const Text(
           'Customer Overview',
-          style: TextStyle(fontFamily: 'Inter', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black87),
+          style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: Colors.black87),
         ),
       ),
       body: SingleChildScrollView(
@@ -61,21 +67,45 @@ class _AdminCustomerDetailsScreenState extends State<AdminCustomerDetailsScreen>
                 color: const Color(0xFFE3F2FD),
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 4),
-                boxShadow: const [BoxShadow(color: Color(0x1F000000), blurRadius: 10, offset: Offset(0, 4))],
+                boxShadow: const [
+                  BoxShadow(
+                      color: Color(0x1F000000),
+                      blurRadius: 10,
+                      offset: Offset(0, 4))
+                ],
               ),
-              child: const Icon(Icons.person_rounded, size: 44, color: Color(0xFF1976D2)),
+              child: const Icon(Icons.person_rounded,
+                  size: 44, color: Color(0xFF1976D2)),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-              decoration: BoxDecoration(color: const Color(0xFF4CAF50), borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.white, width: 2)),
-              child: const Text('Active', style: TextStyle(fontFamily: 'Inter', fontSize: 9, fontWeight: FontWeight.w800, color: Colors.white)),
+              decoration: BoxDecoration(
+                  color: const Color(0xFF4CAF50),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.white, width: 2)),
+              child: const Text('Active',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 9,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white)),
             ),
           ],
         ),
         const SizedBox(height: 16),
-        Text(widget.name, style: const TextStyle(fontFamily: 'Inter', fontSize: 20, fontWeight: FontWeight.w800, color: Colors.black87)),
+        Text(widget.name,
+            style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: Colors.black87)),
         const SizedBox(height: 4),
-        const Text('customer@ripo.com • Joined Jan 2024', style: TextStyle(fontFamily: 'Inter', fontSize: 13, fontWeight: FontWeight.w500, color: Colors.black54)),
+        const Text('customer@ripo.com • Joined Jan 2024',
+            style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: Colors.black54)),
       ],
     );
   }
@@ -88,7 +118,8 @@ class _AdminCustomerDetailsScreenState extends State<AdminCustomerDetailsScreen>
       children: [
         _buildActionButton(Icons.call_rounded, 'Call', const Color(0xFF4CAF50)),
         const SizedBox(width: 16),
-        _buildActionButton(Icons.chat_bubble_rounded, 'Message', const Color(0xFF2196F3)),
+        _buildActionButton(
+            Icons.chat_bubble_rounded, 'Message', const Color(0xFF2196F3)),
       ],
     );
   }
@@ -109,7 +140,12 @@ class _AdminCustomerDetailsScreenState extends State<AdminCustomerDetailsScreen>
           children: [
             Icon(icon, size: 18, color: color),
             const SizedBox(width: 8),
-            Text(label, style: TextStyle(fontFamily: 'Inter', fontSize: 14, fontWeight: FontWeight.w700, color: color)),
+            Text(label,
+                style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: color)),
           ],
         ),
       ),
@@ -124,16 +160,23 @@ class _AdminCustomerDetailsScreenState extends State<AdminCustomerDetailsScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: Color(0x0A000000), blurRadius: 10, offset: Offset(0, 4))],
+        boxShadow: const [
+          BoxShadow(
+              color: Color(0x0A000000), blurRadius: 10, offset: Offset(0, 4))
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Expanded(child: _buildStatItem('Total Taken', '24', const Color(0xFF6950F4))),
+          Expanded(
+              child:
+                  _buildStatItem('Total Taken', '24', const Color(0xFF6950F4))),
           Container(width: 1, height: 40, color: Colors.black12),
-          Expanded(child: _buildStatItem('Pending', '1', const Color(0xFFFF9800))),
+          Expanded(
+              child: _buildStatItem('Pending', '1', const Color(0xFFFF9800))),
           Container(width: 1, height: 40, color: Colors.black12),
-          Expanded(child: _buildStatItem('Cancelled', '3', const Color(0xFFF44336))),
+          Expanded(
+              child: _buildStatItem('Cancelled', '3', const Color(0xFFF44336))),
         ],
       ),
     );
@@ -142,9 +185,19 @@ class _AdminCustomerDetailsScreenState extends State<AdminCustomerDetailsScreen>
   Widget _buildStatItem(String label, String value, Color color) {
     return Column(
       children: [
-        Text(value, style: TextStyle(fontFamily: 'Inter', fontSize: 20, fontWeight: FontWeight.w800, color: color)),
+        Text(value,
+            style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: color)),
         const SizedBox(height: 4),
-        Text(label, style: const TextStyle(fontFamily: 'Inter', fontSize: 11, fontWeight: FontWeight.w600, color: Colors.black45)),
+        Text(label,
+            style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: Colors.black45)),
       ],
     );
   }
@@ -155,7 +208,12 @@ class _AdminCustomerDetailsScreenState extends State<AdminCustomerDetailsScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Service History', style: TextStyle(fontFamily: 'Inter', fontSize: 16, fontWeight: FontWeight.w800, color: Colors.black87)),
+        const Text('Service History',
+            style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: Colors.black87)),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(16),
@@ -166,9 +224,12 @@ class _AdminCustomerDetailsScreenState extends State<AdminCustomerDetailsScreen>
           ),
           child: Column(
             children: [
-              _buildHistoryRow('AC Cleaning', 'Elite Servicing BD', '৳1200', 'Completed'),
+              _buildHistoryRow(
+                  'AC Cleaning', 'Elite Servicing BD', '৳1200', 'Completed'),
               const Divider(height: 24, color: Colors.black12),
-              _buildHistoryRow('Plumbing Fix', 'Shaidul Repair', '৳500', 'Pending', badgeColor: const Color(0xFFFF9800)),
+              _buildHistoryRow(
+                  'Plumbing Fix', 'Shaidul Repair', '৳500', 'Pending',
+                  badgeColor: const Color(0xFFFF9800)),
             ],
           ),
         ),
@@ -176,27 +237,51 @@ class _AdminCustomerDetailsScreenState extends State<AdminCustomerDetailsScreen>
     );
   }
 
-  Widget _buildHistoryRow(String title, String provider, String price, String status, {Color badgeColor = const Color(0xFF4CAF50)}) {
+  Widget _buildHistoryRow(
+      String title, String provider, String price, String status,
+      {Color badgeColor = const Color(0xFF4CAF50)}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: const TextStyle(fontFamily: 'Inter', fontSize: 14, fontWeight: FontWeight.w700, color: Colors.black87)),
+            Text(title,
+                style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black87)),
             const SizedBox(height: 4),
-            Text(provider, style: const TextStyle(fontFamily: 'Inter', fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black54)),
+            Text(provider,
+                style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black54)),
           ],
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(price, style: const TextStyle(fontFamily: 'Inter', fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF6950F4))),
+            Text(price,
+                style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF6950F4))),
             const SizedBox(height: 6),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(color: badgeColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(4)),
-              child: Text(status, style: TextStyle(fontFamily: 'Inter', fontSize: 9, fontWeight: FontWeight.w700, color: badgeColor)),
+              decoration: BoxDecoration(
+                  color: badgeColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(4)),
+              child: Text(status,
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      color: badgeColor)),
             ),
           ],
         ),
@@ -220,13 +305,22 @@ class _AdminCustomerDetailsScreenState extends State<AdminCustomerDetailsScreen>
         children: [
           const Row(
             children: [
-              Icon(Icons.warning_amber_rounded, color: Color(0xFFD32F2F), size: 20),
+              Icon(Icons.warning_amber_rounded,
+                  color: Color(0xFFD32F2F), size: 20),
               SizedBox(width: 8),
-              Text('Danger Zone', style: TextStyle(fontFamily: 'Inter', fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFFD32F2F))),
+              Text('Danger Zone',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFFD32F2F))),
             ],
           ),
           const SizedBox(height: 8),
-          const Text('Banning this customer will instantly restrict their access to the platform layout and prevent future bookings.', style: TextStyle(fontFamily: 'Inter', fontSize: 12, color: Color(0xFFC62828))),
+          const Text(
+              'Banning this customer will instantly restrict their access to the platform layout and prevent future bookings.',
+              style: TextStyle(
+                  fontFamily: 'Inter', fontSize: 12, color: Color(0xFFC62828))),
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
@@ -236,9 +330,15 @@ class _AdminCustomerDetailsScreenState extends State<AdminCustomerDetailsScreen>
                 backgroundColor: const Color(0xFFD32F2F),
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text('Ban Customer Account', style: TextStyle(fontFamily: 'Inter', fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
+              child: const Text('Ban Customer Account',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white)),
             ),
           )
         ],

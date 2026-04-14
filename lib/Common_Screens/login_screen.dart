@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ripo/Common_Screens/forget_password.dart';
 import 'package:ripo/Common_Screens/signup_screen.dart';
+import 'package:ripo/data/api_exception.dart';
+import 'package:ripo/data/repositories/auth_repository.dart';
 import 'package:ripo/customers_screens/customer_dashboard_screen.dart';
 import 'package:ripo/providers_screens/provider_dashboard_screen.dart';
 import 'package:ripo/admin_screens/admin_dashboard_screen.dart';
@@ -13,16 +15,89 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _authRepository = AuthRepository();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _rememberMe = false;
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleLogin() async {
+    final identifier = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (identifier.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Email/phone and password are required.'),
+          backgroundColor: Color(0xFFD32F2F),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      final response = await _authRepository.login(
+        identifier: identifier,
+        password: password,
+      );
+
+      final role = (response['role'] as String?) ?? '';
+      Widget? destination;
+      if (role == 'customer') {
+        destination = const CustomerDashboardScreen();
+      } else if (role == 'provider') {
+        destination = const ProviderDashboardScreen();
+      } else if (role == 'admin') {
+        destination = const AdminDashboardScreen();
+      }
+
+      if (!mounted) return;
+      if (destination == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Unknown account role. Contact support.'),
+            backgroundColor: Color(0xFFD32F2F),
+          ),
+        );
+        return;
+      }
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => destination!),
+        (route) => false,
+      );
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message),
+          backgroundColor: const Color(0xFFD32F2F),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login failed. Please try again.'),
+          backgroundColor: Color(0xFFD32F2F),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
   }
 
   @override
@@ -37,7 +112,6 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-
               // ── Top bar: logo + language ──
               SizedBox(height: size.height * 0.02),
               Row(
@@ -54,7 +128,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   OutlinedButton.icon(
                     onPressed: () {},
-                    icon: const Icon(Icons.language, size: 16, color: Colors.black54),
+                    icon: const Icon(Icons.language,
+                        size: 16, color: Colors.black54),
                     label: const Text(
                       'English',
                       style: TextStyle(
@@ -68,7 +143,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                     ),
                   ),
                 ],
@@ -211,8 +287,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       Checkbox(
                         value: _rememberMe,
-                        onChanged: (val) =>
-                            setState(() => _rememberMe = val!),
+                        onChanged: (val) => setState(() => _rememberMe = val!),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(3),
                         ),
@@ -257,35 +332,7 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    final email = _emailController.text.trim();
-                    final password = _passwordController.text.trim();
-
-                    Widget? destination;
-
-                    if (email == 'customer@ripo.com' && password == '1234') {
-                      destination = const CustomerDashboardScreen();
-                    } else if (email == 'provider@ripo.com' && password == '1234') {
-                      destination = const ProviderDashboardScreen();
-                    } else if (email == 'admin@ripo.com' && password == '1234') {
-                      destination = const AdminDashboardScreen();
-                    }
-
-                    if (destination != null) {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (_) => destination!),
-                        (route) => false,
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Invalid email or password. Try again.'),
-                          backgroundColor: Color(0xFFD32F2F),
-                        ),
-                      );
-                    }
-                  },
+                  onPressed: _isSubmitting ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF6950F4),
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -294,15 +341,25 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    'Log in',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: _isSubmitting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Text(
+                          'Log in',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
                 ),
               ),
 
@@ -323,7 +380,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const SignupScreen()),
+                            MaterialPageRoute(
+                                builder: (_) => const SignupScreen()),
                           );
                         },
                         child: const Text(
@@ -342,7 +400,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
 
               SizedBox(height: size.height * 0.04),
-
             ],
           ),
         ),

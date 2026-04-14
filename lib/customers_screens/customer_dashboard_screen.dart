@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:ripo/data/api_exception.dart';
+import 'package:ripo/data/repositories/customer_repository.dart';
 import 'package:ripo/customers_screens/search_screen.dart';
 import 'package:ripo/customers_screens/my_booking_screen.dart';
 import 'package:ripo/customers_screens/customer_profile_screen.dart';
@@ -15,8 +17,12 @@ class CustomerDashboardScreen extends StatefulWidget {
 }
 
 class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
+  final _customerRepository = CustomerRepository();
+
   int _currentOfferPage = 0;
   int _selectedNavIndex = 0;
+  bool _isLoadingServices = true;
+  String? _servicesError;
 
   late final PageController _offerPageController;
   Timer? _offerTimer;
@@ -63,14 +69,46 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   ];
 
   final List<Map<String, dynamic>> _allServices = [
-    {'image': 'lib/media/AC_servicing.png',           'label': 'AC Repair',    'bg': const Color(0xFFE8F4FD)},
-    {'image': 'lib/media/electronics_servicing.png',  'label': 'Electronics',  'bg': const Color(0xFFFFF3E0)},
-    {'image': 'lib/media/fan_light_servicing.png',    'label': 'Fan & Light',  'bg': const Color(0xFFE8F5E9)},
-    {'image': 'lib/media/fridge_servicing.png',       'label': 'Fridge',       'bg': const Color(0xFFEDE9FF)},
-    {'image': 'lib/media/paint_servicing.png',        'label': 'Painting',     'bg': const Color(0xFFFCE4EC)},
-    {'image': 'lib/media/TV_servicing.png',           'label': 'TV Repair',    'bg': const Color(0xFFE3F2FD)},
-    {'image': 'lib/media/water_filter_servicing.png', 'label': 'Water Filter', 'bg': const Color(0xFFFFFDE7)},
-    {'icon': Icons.grid_view_rounded,                 'label': 'Explore All',  'bg': const Color(0xFFF5F5F5)},
+    {
+      'image': 'lib/media/AC_servicing.png',
+      'label': 'AC Repair',
+      'bg': const Color(0xFFE8F4FD)
+    },
+    {
+      'image': 'lib/media/electronics_servicing.png',
+      'label': 'Electronics',
+      'bg': const Color(0xFFFFF3E0)
+    },
+    {
+      'image': 'lib/media/fan_light_servicing.png',
+      'label': 'Fan & Light',
+      'bg': const Color(0xFFE8F5E9)
+    },
+    {
+      'image': 'lib/media/fridge_servicing.png',
+      'label': 'Fridge',
+      'bg': const Color(0xFFEDE9FF)
+    },
+    {
+      'image': 'lib/media/paint_servicing.png',
+      'label': 'Painting',
+      'bg': const Color(0xFFFCE4EC)
+    },
+    {
+      'image': 'lib/media/TV_servicing.png',
+      'label': 'TV Repair',
+      'bg': const Color(0xFFE3F2FD)
+    },
+    {
+      'image': 'lib/media/water_filter_servicing.png',
+      'label': 'Water Filter',
+      'bg': const Color(0xFFFFFDE7)
+    },
+    {
+      'icon': Icons.grid_view_rounded,
+      'label': 'Explore All',
+      'bg': const Color(0xFFF5F5F5)
+    },
   ];
 
   // ── Lifecycle ────────────────────────────────────────────────
@@ -80,11 +118,12 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     super.initState();
     _offerPageController = PageController();
     _startOfferAutoScroll();
+    _loadDashboardData();
   }
 
   void _startOfferAutoScroll() {
     _offerTimer = Timer.periodic(const Duration(seconds: 4), (_) {
-      if (_offerPageController.hasClients) {
+      if (_offerPageController.hasClients && _offers.isNotEmpty) {
         final next = (_currentOfferPage + 1) % _offers.length;
         _offerPageController.animateToPage(
           next,
@@ -93,6 +132,74 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
         );
       }
     });
+  }
+
+  Future<void> _loadDashboardData() async {
+    setState(() {
+      _isLoadingServices = true;
+      _servicesError = null;
+    });
+
+    try {
+      final recommended = await _customerRepository.fetchRecommendedServices();
+      final allServices = await _customerRepository.fetchAllServices();
+
+      if (!mounted) return;
+
+      _recommendedServices
+        ..clear()
+        ..addAll(
+          recommended.map(
+            (service) => {
+              'id': service['id']?.toString(),
+              'name': service['name'] ?? 'Unknown Service',
+              'discount': service['discount'] ?? '',
+              'price': service['price']?.toString() ?? '0',
+              'originalPrice': service['originalPrice']?.toString() ?? '0',
+              'image': service['image'] ?? 'lib/media/AC_servicing.png',
+              'category': service['category'] ?? 'General',
+            },
+          ),
+        );
+
+      _allServices
+        ..clear()
+        ..addAll(
+          allServices.map(
+            (service) => {
+              'id': service['id']?.toString(),
+              'image': service['image'] ?? 'lib/media/AC_servicing.png',
+              'label': service['name'] ?? 'Service',
+              'bg': _colorForCategory((service['category'] ?? '').toString()),
+            },
+          ),
+        )
+        ..add({
+          'icon': Icons.grid_view_rounded,
+          'label': 'Explore All',
+          'bg': const Color(0xFFF5F5F5),
+        });
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      _servicesError = e.message;
+    } catch (_) {
+      if (!mounted) return;
+      _servicesError = 'Failed to load dashboard data.';
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingServices = false);
+      }
+    }
+  }
+
+  Color _colorForCategory(String category) {
+    final key = category.toLowerCase();
+    if (key.contains('ac')) return const Color(0xFFE8F4FD);
+    if (key.contains('elect')) return const Color(0xFFFFF3E0);
+    if (key.contains('clean')) return const Color(0xFFE8F5E9);
+    if (key.contains('paint')) return const Color(0xFFFCE4EC);
+    if (key.contains('water')) return const Color(0xFFFFFDE7);
+    return const Color(0xFFEDE9FF);
   }
 
   @override
@@ -109,26 +216,74 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
       children: [
         _buildHeader(),
         Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildOfferBanner(),
-                const SizedBox(height: 24),
-                _buildSectionHeader('Recommended Services'),
-                const SizedBox(height: 14),
-                _buildRecommendedServices(),
-                const SizedBox(height: 26),
-                _buildSectionHeader('All Services'),
-                const SizedBox(height: 14),
-                _buildAllServicesGrid(),
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
+          child: _isLoadingServices
+              ? const Center(child: CircularProgressIndicator())
+              : _servicesError != null
+                  ? _buildDashboardState(
+                      message: _servicesError!,
+                      actionLabel: 'Retry',
+                      onTap: _loadDashboardData,
+                    )
+                  : _recommendedServices.isEmpty && _allServices.isEmpty
+                      ? _buildDashboardState(
+                          message: 'No services available yet.',
+                          actionLabel: 'Refresh',
+                          onTap: _loadDashboardData,
+                        )
+                      : RefreshIndicator(
+                          onRefresh: _loadDashboardData,
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildOfferBanner(),
+                                const SizedBox(height: 24),
+                                _buildSectionHeader('Recommended Services'),
+                                const SizedBox(height: 14),
+                                _buildRecommendedServices(),
+                                const SizedBox(height: 26),
+                                _buildSectionHeader('All Services'),
+                                const SizedBox(height: 14),
+                                _buildAllServicesGrid(),
+                                const SizedBox(height: 24),
+                              ],
+                            ),
+                          ),
+                        ),
         ),
       ],
+    );
+  }
+
+  Widget _buildDashboardState({
+    required String message,
+    required String actionLabel,
+    required Future<void> Function() onTap,
+  }) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.info_outline_rounded,
+              size: 44, color: Colors.black38),
+          const SizedBox(height: 12),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 14,
+              color: Colors.black54,
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextButton(
+            onPressed: onTap,
+            child: Text(actionLabel),
+          ),
+        ],
+      ),
     );
   }
 
@@ -159,7 +314,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
-          child: const Icon(Icons.search_rounded, color: Colors.white, size: 24),
+          child:
+              const Icon(Icons.search_rounded, color: Colors.white, size: 24),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -281,7 +437,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                   ),
                 ],
               ),
-
             ],
           ),
         ),
@@ -441,7 +596,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
         itemCount: _recommendedServices.length,
-        itemBuilder: (_, i) => _buildRecomendedServiceCard(_recommendedServices[i]),
+        itemBuilder: (_, i) =>
+            _buildRecomendedServiceCard(_recommendedServices[i]),
       ),
     );
   }
@@ -455,10 +611,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x0A000000), 
-            blurRadius: 8, 
-            offset: Offset(0, 4)
-          ),
+              color: Color(0x0A000000), blurRadius: 8, offset: Offset(0, 4)),
         ],
       ),
       clipBehavior: Clip.antiAlias,
@@ -471,7 +624,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
               Container(
                 height: 110,
                 width: 160,
-                color: const Color(0xFFF9F9F9), // Light bg for transparent images
+                color:
+                    const Color(0xFFF9F9F9), // Light bg for transparent images
                 child: Image.asset(
                   s['image'] as String,
                   fit: BoxFit.cover,
@@ -481,8 +635,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                 top: 8,
                 left: 8,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.amber.shade700,
                     borderRadius: BorderRadius.circular(6),
@@ -565,7 +719,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
       itemCount: _allServices.length,
       itemBuilder: (_, i) {
         final s = _allServices[i];
-        final isButton = s.containsKey('icon'); // Check if it's the 8th item button
+        final isButton =
+            s.containsKey('icon'); // Check if it's the 8th item button
 
         return Container(
           decoration: BoxDecoration(
@@ -623,8 +778,10 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 13,
-                        fontWeight: isButton ? FontWeight.w700 : FontWeight.w600,
-                        color: isButton ? const Color(0xFF6950F4) : Colors.black87,
+                        fontWeight:
+                            isButton ? FontWeight.w700 : FontWeight.w600,
+                        color:
+                            isButton ? const Color(0xFF6950F4) : Colors.black87,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -664,17 +821,23 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _buildNavItem(icon: Icons.home_rounded, label: 'Home', index: 0),
-            _buildNavItem(icon: Icons.grid_view_rounded, label: 'Category', index: 1),
+            _buildNavItem(
+                icon: Icons.grid_view_rounded, label: 'Category', index: 1),
             const SizedBox(width: 40), // Reduced space for smaller FAB
-            _buildNavItem(icon: Icons.calendar_month_outlined, label: 'Booking', index: 2),
-            _buildNavItem(icon: Icons.person_outline_rounded, label: 'Profile', index: 3),
+            _buildNavItem(
+                icon: Icons.calendar_month_outlined,
+                label: 'Booking',
+                index: 2),
+            _buildNavItem(
+                icon: Icons.person_outline_rounded, label: 'Profile', index: 3),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNavItem({required IconData icon, required String label, required int index}) {
+  Widget _buildNavItem(
+      {required IconData icon, required String label, required int index}) {
     final selected = _selectedNavIndex == index;
     return GestureDetector(
       onTap: () => setState(() => _selectedNavIndex = index),
